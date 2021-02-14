@@ -7,20 +7,22 @@ public class BlobbyController : MonoBehaviour
     public static List<Vector3> blobbyPositions = new List<Vector3>();
 
     [SerializeField] private float moveSpeed = 0.5f;
-    [SerializeField] private float moveGatherDistance = 0.5f;
     [SerializeField] private float mouseDistanceMultiplierMax = 3f;
-    [SerializeField] private float blobbyDistance = 0.25f;
+    [SerializeField] private float socialDistance = 0.5f;
+    [SerializeField] private float socialDistanceFactor = 1f;
 
     private int blobbyId;
+
+    private float blobbyDistance;
 
     void Start() {
         blobbyPositions.Add(transform.position);
         blobbyId = blobbyPositions.Count - 1;
-
-        blobbyDistance *= transform.localScale.x;
     }
 
     void Update() {
+        blobbyDistance = ((transform.localScale.x / 16) + socialDistance) * socialDistanceFactor;
+
         Move();
         UpdatePositionList();
     }
@@ -29,9 +31,7 @@ public class BlobbyController : MonoBehaviour
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 dir = (new Vector3(mousePos.x, mousePos.y, 0) - transform.position);
 
-        if (dir.magnitude < moveGatherDistance) { return; }
-
-        float mouseDistanceMultiplier = Mathf.Clamp(dir.magnitude, 1f, mouseDistanceMultiplierMax);
+        float mouseDistanceMultiplier = Mathf.Clamp(dir.magnitude, 0f, mouseDistanceMultiplierMax);
 
         Vector3 targetPos = dir.normalized * moveSpeed * mouseDistanceMultiplier;
 
