@@ -35,16 +35,33 @@ public class BlobbyController : MonoBehaviour
 
         Vector3 targetPos = dir.normalized * moveSpeed * mouseDistanceMultiplier;
 
-        for (int i = 0; i < blobbyPositions.Count; i++) {
-            if (i == blobbyId) { continue; }
-
-            Vector3 differance = blobbyPositions[i] - transform.position;
-            if (differance.magnitude > blobbyDistance) { continue; }
-
-            targetPos -= differance.normalized * (blobbyDistance - differance.magnitude);
-        }
+        targetPos = DistanceGroupCheck(targetPos);
 
         transform.position += targetPos * Time.deltaTime;
+    }
+
+    Vector3 DistanceGroupCheck(Vector3 targetPos) {
+        /*foreach (Vector3 blobbyPos in blobbyPositions) {
+            if (blobbyPos == blobbyPositions[blobbyId]) { continue; }
+
+            Vector3 differance = blobbyPos - blobbyPositions[blobbyId];
+            float magnitude = differance.magnitude;
+            if (magnitude > blobbyDistance) { continue; }
+
+            targetPos -= differance.normalized * (blobbyDistance - magnitude);
+        }*/
+
+        for (int i = 0; i < blobbyPositions.Count; i++) {
+            if (blobbyPositions[i] == blobbyPositions[blobbyId]) { continue; }
+
+            Vector3 differance = blobbyPositions[i] - blobbyPositions[blobbyId];
+            float magnitude = differance.magnitude;
+            if (magnitude > blobbyDistance) { continue; }
+
+            targetPos -= differance.normalized * (blobbyDistance - magnitude);
+        }
+
+        return targetPos;
     }
 
     void UpdatePositionList() {
