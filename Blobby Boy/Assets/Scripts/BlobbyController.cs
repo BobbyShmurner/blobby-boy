@@ -5,31 +5,46 @@ using UnityEngine;
 public class BlobbyController : MonoBehaviour
 {
     public static List<Vector3> blobbyPositions = new List<Vector3>();
+    public static Vector3 blobbyMouseTargetPos;
 
     [SerializeField] private float moveSpeed = 0.5f;
     [SerializeField] private float mouseDistanceMultiplierMax = 3f;
     [SerializeField] private float socialDistance = 0.5f;
     [SerializeField] private float socialDistanceFactor = 1f;
+    [Range(0f, 1f)]
+    [SerializeField] private float defect = 0.1f;
+
+    private Animator animator;
 
     private int blobbyId;
 
     private float blobbyDistance;
 
     void Start() {
+        animator = GetComponentInChildren<Animator>();
+
         blobbyPositions.Add(transform.position);
         blobbyId = blobbyPositions.Count - 1;
+
+        //Setup Defects
+        defect = Random.Range(-defect, defect);
+        moveSpeed += defect;
+        animator.SetFloat("hopSpeed", animator.GetFloat("hopSpeed") + defect);
     }
 
     void Update() {
         blobbyDistance = ((transform.localScale.x / 16) + socialDistance) * socialDistanceFactor;
+
+        if (Input.GetMouseButtonDown(0)) {
+            UpdateMouseTargetPos(Input.mousePosition);
+        }
 
         Move();
         UpdatePositionList();
     }
 
     void Move() {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 dir = (new Vector3(mousePos.x, mousePos.y, 0) - transform.position);
+        Vector3 dir = (blobbyMouseTargetPos - transform.position);
 
         float mouseDistanceMultiplier = Mathf.Clamp(dir.magnitude, 0f, mouseDistanceMultiplierMax);
 
@@ -62,6 +77,14 @@ public class BlobbyController : MonoBehaviour
         }
 
         return targetPos;
+    }
+
+    void UpdateMouseTargetPos(Vector2 mousePos) {
+        Vector3 target = Camera.main.ScreenToWorldPoint(mousePos);
+
+        if (blobbyMouseTargetPos == target) { return; }
+
+        blobbyMouseTargetPos = new Vector3(target.x, target.y, 0f);
     }
 
     void UpdatePositionList() {
