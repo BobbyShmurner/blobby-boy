@@ -35,10 +35,6 @@ public class BlobbyController : MonoBehaviour
     void Update() {
         blobbyDistance = ((transform.localScale.x / 16) + socialDistance) * socialDistanceFactor;
 
-        if (Input.GetMouseButtonDown(0)) {
-            UpdateMouseTargetPos(Input.mousePosition);
-        }
-
         Move();
         UpdatePositionList();
     }
@@ -77,14 +73,6 @@ public class BlobbyController : MonoBehaviour
         }
 
         return targetPos;
-    }
-
-    void UpdateMouseTargetPos(Vector2 mousePos) {
-        Vector3 target = Camera.main.ScreenToWorldPoint(mousePos);
-
-        if (blobbyMouseTargetPos == target) { return; }
-
-        blobbyMouseTargetPos = new Vector3(target.x, target.y, 0f);
     }
 
     void UpdatePositionList() {
